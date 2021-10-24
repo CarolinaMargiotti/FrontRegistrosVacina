@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { Context } from "./AuthContext";
 
-const CustomRoute = ({ isPrivate, ...rest }) => {
-    const { logado, isLoading } = useContext(Context);
+const CustomRoute = ({ isPrivate, isAdmin, ...rest }) => {
+    const { logado, isLoading, perfil } = useContext(Context);
 
     if (isLoading) {
         console.log("Lendo o storage destino: ", rest.path);
@@ -14,7 +14,11 @@ const CustomRoute = ({ isPrivate, ...rest }) => {
         return <Redirect to="/login" />;
     }
 
-    console.log("Component renderizado: ", rest.path);
+    if (isAdmin && perfil !== "admin") {
+        return <Redirect to="/registro" />;
+    }
+
+    console.log("Componente renderizado: ", rest.path);
     return <Route {...rest} />;
 };
 

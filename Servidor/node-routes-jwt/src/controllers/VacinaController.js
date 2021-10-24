@@ -56,7 +56,7 @@ class VacinaController {
 	}
 
 	async remove(req, res) {
-		let { idvacina } = req.body;
+		let { idvacina } = req.query;
 		idvacina = (idvacina || "").toString().replace(/[^\d]+/g, "");
 		if (idvacina === "") {
 			return res

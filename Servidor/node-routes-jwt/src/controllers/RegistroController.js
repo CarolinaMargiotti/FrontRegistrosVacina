@@ -84,7 +84,7 @@ class RegistroController {
 
 	async remove(req, res) {
 		const token = await getToken(req);
-		let { idregistro } = req.body;
+		let { idregistro } = req.query;
 		idregistro = (idregistro || "").toString().replace(/[^\d]+/g, "");
 		if (idregistro === "") {
 			return res
