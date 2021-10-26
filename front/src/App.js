@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import Vacina from "./pages/Vacina";
 import Perfil from "./pages/Perfil";
+import SeusDados from "./pages/SeusDados";
+import Cadastro from "./pages/Cadastro";
 
 function App() {
     return (
@@ -25,6 +27,12 @@ function App() {
                             component={Vacina}
                         />
                         <CustomRoute
+                            isPrivate
+                            exact
+                            path="/seusdados"
+                            component={SeusDados}
+                        />
+                        <CustomRoute
                             isAdmin
                             isPrivate
                             exact
@@ -36,6 +44,11 @@ function App() {
                             exact
                             path="/registro"
                             component={Registro}
+                        />
+                        <CustomRoute
+                            exact
+                            path="/cadastro"
+                            component={Cadastro}
                         />
                     </Switch>
                 </Router>

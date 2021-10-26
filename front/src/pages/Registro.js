@@ -1,20 +1,38 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../AuthContext";
 
 function Registro() {
+    const [registros, setRegistros] = useState([]);
+    const [vacinas, setVacinas] = useState([]);
     const [data, setData] = useState("");
     const [idVacina, setVacina] = useState(1);
     const {
         createRegistro,
-        registros,
-        vacinas,
+        listRegistros,
+        listVacinas,
         removerRegistro,
         updateRegistro,
     } = useContext(Context);
 
+    const retrieveRegistros = async () => {
+        const data = await listRegistros(0, 4);
+        setRegistros(data);
+    };
+
+    const retrieveVacinas = async () => {
+        const data = await listVacinas(0, 4);
+        setVacinas(data);
+    };
+
+    useEffect(() => {
+        retrieveRegistros();
+        retrieveVacinas();
+    }, []);
     const handle = (e) => {
         e.preventDefault();
         createRegistro(idVacina, data);
+        setTimeout(() => retrieveVacinas(), 100);
+        setTimeout(() => retrieveRegistros(), 100);
     };
 
     const limpar = (e) => {
@@ -26,6 +44,8 @@ function Registro() {
     const remover = (e, id) => {
         e.preventDefault();
         removerRegistro(id);
+        setTimeout(() => retrieveVacinas(), 100);
+        setTimeout(() => retrieveRegistros(), 100);
     };
 
     const editar = (e, idregistro, idvacina) => {
@@ -35,6 +55,7 @@ function Registro() {
         console.log(idvacina);
         console.log(newdata);
         updateRegistro(idregistro, idvacina, newdata);
+        setTimeout(() => retrieveRegistros(), 100);
     };
 
     return (

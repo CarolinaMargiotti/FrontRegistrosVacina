@@ -5,27 +5,24 @@ import api from "./api";
 const Hooks = () => {
     const [logado, setLogado] = useState(false);
     const [perfil, setPerfil] = useState("");
+    const [mail, setMail] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-    const [registros, setRegistros] = useState([]);
-    const [vacinas, setVacinas] = useState([]);
 
     //chamado após montar componente
 
     useEffect(() => {
         const storageToken = localStorage.getItem("@token");
         let storagePerfil = localStorage.getItem("@perfil");
-
-        if (storagePerfil !== null) {
-            storagePerfil = storagePerfil.replace('"', "").replace('"', "");
-        }
+        let storageMail = localStorage.getItem("@mail");
 
         if (storageToken) {
             const token = JSON.parse(storageToken);
+            const perfil = JSON.parse(storagePerfil);
+            const mail = JSON.parse(storageMail);
             api.defaults.headers.Authorization = `Bearer ${token}`;
             setLogado(true);
-            setPerfil(storagePerfil);
-            listRegistros();
-            listVacinas();
+            setPerfil(perfil);
+            setMail(mail);
         }
         setIsLoading(false);
         console.log("Storage. Token:", storageToken);
@@ -35,17 +32,19 @@ const Hooks = () => {
 
     const login = async (mail, senha) => {
         try {
+            console.log(mail, senha);
             const { data } = await api.post("/usuario/login", {
                 mail,
                 senha,
             });
+            console.log(data);
             localStorage.setItem("@token", JSON.stringify(data.token));
             localStorage.setItem("@perfil", JSON.stringify(data.perfil));
+            localStorage.setItem("@mail", JSON.stringify(data.mail));
             api.defaults.headers.Authorization = `Bearer ${data.token}`;
             setLogado(true);
             setPerfil(data.perfil);
-            listRegistros();
-            listVacinas();
+            setMail(data.mail);
             history.push("/registro");
         } catch (e) {
             console.log(e.message);
@@ -56,8 +55,10 @@ const Hooks = () => {
     const logout = () => {
         setLogado(false);
         setPerfil("");
+        setMail("");
         localStorage.removeItem("@token");
         localStorage.removeItem("@perfil");
+        localStorage.removeItem("@mail");
         api.defaults.headers.Authorization = undefined;
         history.push("/login");
     };
@@ -70,7 +71,6 @@ const Hooks = () => {
                 idvacina,
                 data,
             });
-            await listRegistros();
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -80,10 +80,10 @@ const Hooks = () => {
     const listRegistros = async (offset, limit) => {
         try {
             const { data } = await api.get("/registro/list", {
-                offset,
-                limit,
+                offset: offset,
+                limit: limit,
             });
-            setRegistros(data.registros);
+            return data.registros;
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -98,7 +98,6 @@ const Hooks = () => {
                     idregistro,
                 },
             });
-            await listRegistros();
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -112,7 +111,6 @@ const Hooks = () => {
                 idvacina,
                 data,
             });
-            await listRegistros();
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -126,7 +124,6 @@ const Hooks = () => {
             await api.post("/vacina/create", {
                 nome,
             });
-            await listVacinas();
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -139,7 +136,7 @@ const Hooks = () => {
                 offset,
                 limit,
             });
-            setVacinas(data.vacinas);
+            return data.vacinas;
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -152,7 +149,6 @@ const Hooks = () => {
                 idvacina,
                 nome,
             });
-            await listVacinas();
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -161,14 +157,72 @@ const Hooks = () => {
 
     const removerVacina = async (idvacina) => {
         try {
-            console.log(idvacina);
             await api.delete("/vacina/remove", {
                 method: "delete",
                 params: {
                     idvacina,
                 },
             });
-            await listVacinas();
+        } catch (e) {
+            console.log(e.message);
+            alert(e.response.data.error[0]);
+        }
+    };
+
+    //USUARIO
+    const createUsuario = async (mail, senha, perfil) => {
+        try {
+            await api.post("/usuario/create", {
+                mail,
+                senha,
+            });
+        } catch (e) {
+            console.log(e.message);
+            alert(e.response.data.error[0]);
+        }
+    };
+
+    const updatePerfil = async (idusuario, perfil) => {
+        try {
+            await api.put("usuario/update/perfil", {
+                idusuario,
+                perfil,
+            });
+        } catch (e) {
+            console.log(e.message);
+            alert(e.response.data.error[0]);
+        }
+    };
+
+    const updateMail = async (mail) => {
+        try {
+            await api.put("/usuario/update/mail", { mail });
+            setMail(mail);
+            localStorage.setItem("@mail", mail);
+            alert("Email alterado com sucesso");
+        } catch (e) {
+            console.log(e.message);
+            alert(e.response.data.error[0]);
+        }
+    };
+
+    const updateSenha = async (senha) => {
+        try {
+            await api.put("usuario/update/senha", { senha });
+            alert("Senha alterado com sucesso");
+        } catch (e) {
+            console.log(e.message);
+            alert(e.response.data.error[0]);
+        }
+    };
+
+    const listUsuarios = async (offset, limit) => {
+        try {
+            const { data } = await api.get("usuario/list", {
+                offset,
+                limit,
+            });
+            return data.usuarios;
         } catch (e) {
             console.log(e.message);
             alert(e.response.data.error[0]);
@@ -182,14 +236,20 @@ const Hooks = () => {
         setLogado,
         isLoading,
         perfil,
+        mail,
         createRegistro,
         removerRegistro,
-        registros,
-        vacinas,
         createVacina,
         removerVacina,
         updateVacina,
         updateRegistro,
+        updateMail,
+        updateSenha,
+        listUsuarios,
+        listVacinas,
+        listRegistros,
+        createUsuario,
+        updatePerfil,
     };
 };
 

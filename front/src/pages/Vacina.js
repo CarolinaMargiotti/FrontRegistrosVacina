@@ -1,18 +1,31 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../AuthContext";
+
 function Vacina() {
-    const { vacinas, createVacina, removerVacina, updateVacina } =
+    const { listVacinas, createVacina, removerVacina, updateVacina } =
         useContext(Context);
+    const [vacinas, setVacinas] = useState([]);
     const [nome, setNome] = useState("");
+
+    useEffect(() => {
+        retrieveVacinas();
+    }, []);
+
+    const retrieveVacinas = async () => {
+        const data = await listVacinas(0, 4);
+        setVacinas(data);
+    };
 
     const remover = (e, id) => {
         e.preventDefault();
         removerVacina(id);
+        setTimeout(() => retrieveVacinas(), 100);
     };
 
     const handle = (e) => {
         e.preventDefault();
         createVacina(nome);
+        setTimeout(() => retrieveVacinas(), 100);
     };
 
     const limpar = (e) => {
@@ -24,6 +37,7 @@ function Vacina() {
         e.preventDefault();
         const newname = prompt("Digite um novo nome");
         updateVacina(id, newname);
+        setTimeout(() => retrieveVacinas(), 100);
     };
 
     return (

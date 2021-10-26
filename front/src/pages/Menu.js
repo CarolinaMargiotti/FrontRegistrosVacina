@@ -13,7 +13,9 @@ function Menu() {
                     <button onClick={() => history.push("/registro")}>
                         Registro
                     </button>
-                    <button>Seus dados</button>
+                    <button onClick={() => history.push("/seusdados")}>
+                        Seus dados
+                    </button>
                     {perfil === "admin" && (
                         <>
                             <button onClick={() => history.push("/perfil")}>
@@ -27,7 +29,14 @@ function Menu() {
                 </div>
             )}
             {!logado && (
-                <button onClick={() => history.push("/login")}>Login</button>
+                <div>
+                    <button onClick={() => history.push("/login")}>
+                        Login
+                    </button>
+                    <button onClick={() => history.push("/cadastro")}>
+                        Criar conta
+                    </button>
+                </div>
             )}
         </div>
     );
