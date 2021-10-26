@@ -80,8 +80,10 @@ const Hooks = () => {
     const listRegistros = async (offset, limit) => {
         try {
             const { data } = await api.get("/registro/list", {
-                offset: offset,
-                limit: limit,
+                params: {
+                    limit,
+                    offset,
+                },
             });
             return data.registros;
         } catch (e) {
@@ -133,8 +135,10 @@ const Hooks = () => {
     const listVacinas = async (offset, limit) => {
         try {
             const { data } = await api.get("/vacina/list", {
-                offset,
-                limit,
+                params: {
+                    offset,
+                    limit,
+                },
             });
             return data.vacinas;
         } catch (e) {
@@ -219,8 +223,10 @@ const Hooks = () => {
     const listUsuarios = async (offset, limit) => {
         try {
             const { data } = await api.get("usuario/list", {
-                offset,
-                limit,
+                params: {
+                    offset,
+                    limit,
+                },
             });
             return data.usuarios;
         } catch (e) {

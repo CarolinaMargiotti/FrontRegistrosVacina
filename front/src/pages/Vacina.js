@@ -6,13 +6,18 @@ function Vacina() {
         useContext(Context);
     const [vacinas, setVacinas] = useState([]);
     const [nome, setNome] = useState("");
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(4);
 
     useEffect(() => {
         retrieveVacinas();
-    }, []);
+    }, [offset]);
 
     const retrieveVacinas = async () => {
-        const data = await listVacinas(0, 4);
+        const data = await listVacinas(offset, limit);
+        if (data.length === 0) {
+            setOffset(Math.max(offset - limit, 0));
+        }
         setVacinas(data);
     };
 
@@ -38,6 +43,18 @@ function Vacina() {
         const newname = prompt("Digite um novo nome");
         updateVacina(id, newname);
         setTimeout(() => retrieveVacinas(), 100);
+    };
+
+    const anterior = (e) => {
+        e.preventDefault();
+        const newOffset = Math.max(offset - limit, 0);
+        setOffset(newOffset);
+    };
+
+    const proximo = (e) => {
+        e.preventDefault();
+        const newOffset = offset + limit;
+        setOffset(newOffset);
     };
 
     return (
@@ -82,6 +99,9 @@ function Vacina() {
                         ))}
                 </tbody>
             </table>
+
+            <button onClick={(e) => anterior(e)}>Anterior</button>
+            <button onClick={(e) => proximo(e)}>Próximo</button>
         </div>
     );
 }

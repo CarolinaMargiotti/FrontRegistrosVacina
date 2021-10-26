@@ -5,9 +5,14 @@ import { Context } from "../AuthContext";
 function Perfil() {
     const { listUsuarios, updatePerfil } = useContext(Context);
     const [usuarios, setUsuarios] = useState([]);
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(4);
 
     const retrieveUsuarios = async () => {
-        const data = await listUsuarios(0, 4);
+        const data = await listUsuarios(offset, limit);
+        if (data.length === 0) {
+            setOffset(Math.max(offset - limit, 0));
+        }
         setUsuarios(data);
     };
 
@@ -27,9 +32,21 @@ function Perfil() {
         setTimeout(() => retrieveUsuarios(), 100);
     };
 
-    useEffect(async () => {
-        await retrieveUsuarios();
-    }, []);
+    useEffect(() => {
+        retrieveUsuarios();
+    }, [offset]);
+
+    const anterior = (e) => {
+        e.preventDefault();
+        const newOffset = Math.max(offset - limit, 0);
+        setOffset(newOffset);
+    };
+
+    const proximo = (e) => {
+        e.preventDefault();
+        const newOffset = offset + limit;
+        setOffset(newOffset);
+    };
 
     return (
         <div>
@@ -73,6 +90,8 @@ function Perfil() {
                                 ))}
                         </tbody>
                     </table>
+                    <button onClick={(e) => anterior(e)}>Anterior</button>
+                    <button onClick={(e) => proximo(e)}>Próximo</button>
                 </div>
             </div>
         </div>

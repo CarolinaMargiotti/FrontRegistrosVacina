@@ -6,6 +6,9 @@ function Registro() {
     const [vacinas, setVacinas] = useState([]);
     const [data, setData] = useState("");
     const [idVacina, setVacina] = useState(1);
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(4);
+
     const {
         createRegistro,
         listRegistros,
@@ -15,19 +18,22 @@ function Registro() {
     } = useContext(Context);
 
     const retrieveRegistros = async () => {
-        const data = await listRegistros(0, 4);
-        setRegistros(data);
+        const data = await listRegistros(offset, limit);
+        if (data.length === 0) {
+            setOffset(Math.max(offset - limit, 0));
+        } else setRegistros(data);
     };
 
     const retrieveVacinas = async () => {
-        const data = await listVacinas(0, 4);
+        const data = await listVacinas();
         setVacinas(data);
     };
 
     useEffect(() => {
         retrieveRegistros();
         retrieveVacinas();
-    }, []);
+    }, [offset]);
+
     const handle = (e) => {
         e.preventDefault();
         createRegistro(idVacina, data);
@@ -51,11 +57,20 @@ function Registro() {
     const editar = (e, idregistro, idvacina) => {
         e.preventDefault();
         const newdata = prompt("Digite uma nova data");
-        console.log(idregistro);
-        console.log(idvacina);
-        console.log(newdata);
         updateRegistro(idregistro, idvacina, newdata);
         setTimeout(() => retrieveRegistros(), 100);
+    };
+
+    const anterior = (e) => {
+        e.preventDefault();
+        const newOffset = Math.max(offset - limit, 0);
+        setOffset(newOffset);
+    };
+
+    const proximo = (e) => {
+        e.preventDefault();
+        const newOffset = offset + limit;
+        setOffset(newOffset);
     };
 
     return (
@@ -120,6 +135,10 @@ function Registro() {
                         ))}
                 </tbody>
             </table>
+            <div>
+                <button onClick={(e) => anterior(e)}>Anterior</button>
+                <button onClick={(e) => proximo(e)}>Próximo</button>
+            </div>
         </div>
     );
 }

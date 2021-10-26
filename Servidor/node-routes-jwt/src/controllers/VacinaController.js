@@ -93,7 +93,7 @@ class VacinaController {
 	}
 
 	async list(req, res) {
-		let { limit, offset } = req.body;
+		let { limit, offset } = req.query;
 		return await VacinaModel.findAndCountAll({
 			attributes: ["idvacina", "nome"],
 			order: [["nome", "ASC"]],

@@ -165,7 +165,7 @@ class UsuarioController {
 	}
 
 	async list(req, res) {
-		let { limit, offset } = req.body;
+		let { limit, offset } = req.query;
 		return await UsuarioModel.findAndCountAll({
 			attributes: ["idusuario", "mail", "perfil"],
 			order: [["mail", "ASC"]],

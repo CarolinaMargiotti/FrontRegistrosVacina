@@ -117,10 +117,7 @@ class RegistroController {
 
 	async list(req, res) {
 		const token = await getToken(req);
-		let { limit, offset } = req.body;
-		console.log(req.query);
-		console.log(limit);
-		console.log(offset);
+		let { limit, offset } = req.query;
 		return await RegistroModel.findAndCountAll({
 			where: { idusuario: token.idusuario },
 			attributes: ["idregistro", "idvacina", "data"],
