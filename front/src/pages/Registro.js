@@ -8,7 +8,7 @@ function Registro() {
     const [idVacina, setVacina] = useState(1);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(4);
-
+    //pagina de registro
     const {
         createRegistro,
         listRegistros,
