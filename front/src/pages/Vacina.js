@@ -7,7 +7,12 @@ function Vacina() {
     const [vacinas, setVacinas] = useState([]);
     const [nome, setNome] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit, setLimit] = useState(4);
+    const [limit, setLimit] = useState(12);
+
+    const [showModal, setModalValue] = useState(false);
+    const [modalDataValores, setModalDataValores] = useState({
+        idvacina: "",
+    });
 
     useEffect(() => {
         retrieveVacinas();
@@ -21,16 +26,16 @@ function Vacina() {
         setVacinas(data);
     };
 
-    const remover = (e, id) => {
+    const remover = async (e, id) => {
         e.preventDefault();
-        removerVacina(id);
-        setTimeout(() => retrieveVacinas(), 100);
+        await removerVacina(id);
+        retrieveVacinas();
     };
 
-    const handle = (e) => {
+    const handle = async (e) => {
         e.preventDefault();
-        createVacina(nome);
-        setTimeout(() => retrieveVacinas(), 100);
+        await createVacina(nome);
+        retrieveVacinas();
     };
 
     const limpar = (e) => {
@@ -38,11 +43,26 @@ function Vacina() {
         setNome("");
     };
 
-    const editar = (e, id) => {
+    const editar = async (e) => {
         e.preventDefault();
-        const newname = prompt("Digite um novo nome");
-        updateVacina(id, newname);
-        setTimeout(() => retrieveVacinas(), 100);
+        await updateVacina(modalDataValores.idvacina, nome);
+        retrieveVacinas();
+    };
+
+    const ativarModal = (e, idvacina) => {
+        e.preventDefault();
+        setModalDataValores({ idvacina: idvacina });
+        setModalValue(true);
+    };
+
+    const desativarModal = (e) => {
+        e.preventDefault();
+        setModalValue(false);
+        setModalDataValores({
+            idregistro: "",
+            idvacina: "",
+        });
+        setNome("");
     };
 
     const anterior = (e) => {
@@ -59,6 +79,24 @@ function Vacina() {
 
     return (
         <div>
+            <div
+                class="Modal"
+                style={{
+                    visibility: showModal ? "visible" : "hidden",
+                }}
+            >
+                <div class="ModalClose" onClick={(e) => desativarModal(e)}>
+                    x
+                </div>
+                <h4>Editar Nome da vacina ID: {modalDataValores.idvacina}</h4>
+                <input
+                    type="text"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                ></input>
+                <button onClick={(e) => editar(e)}>Editar</button>
+            </div>
+
             <h4>Vacina</h4>
             <div>
                 <label>Nome</label>
@@ -76,23 +114,31 @@ function Vacina() {
                         <th>ID</th>
                         <th>Vacina</th>
                         <th>Editar</th>
+                        <th>Excluir</th>
                     </tr>
                 </thead>
                 <tbody>
                     {vacinas !== undefined &&
                         vacinas.map((item, index) => (
-                            <tr
-                                onContextMenu={(e) => remover(e, item.idvacina)}
-                            >
+                            <tr>
                                 <td>{item.idvacina}</td>
                                 <td>{item.nome}</td>
                                 <td>
                                     <button
                                         onClick={(e) =>
-                                            editar(e, item.idvacina)
+                                            ativarModal(e, item.idvacina)
                                         }
                                     >
                                         Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={(e) =>
+                                            remover(e, item.idvacina)
+                                        }
+                                    >
+                                        Excluir
                                     </button>
                                 </td>
                             </tr>

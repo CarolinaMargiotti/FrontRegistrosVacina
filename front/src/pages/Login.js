@@ -15,7 +15,7 @@ function Login() {
         <div>
             <h4>Login</h4>
             <div>
-                <label>e-mail</label>
+                <label>E-mail</label>
                 <input value={mail} onChange={(e) => setMail(e.target.value)} />
             </div>
             <div>

@@ -8,10 +8,10 @@ function Cadastro() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
 
-    const handle = (e) => {
+    const handle = async (e) => {
         e.preventDefault();
-        createUsuario(email, senha, "user");
-        setTimeout(() => login(email, senha), 100);
+        await createUsuario(email, senha, "user");
+        login(email, senha);
     };
 
     return (

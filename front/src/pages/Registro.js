@@ -7,8 +7,14 @@ function Registro() {
     const [data, setData] = useState("");
     const [idVacina, setVacina] = useState(1);
     const [offset, setOffset] = useState(0);
-    const [limit, setLimit] = useState(4);
-    //pagina de registro
+    const [limit, setLimit] = useState(12);
+    const [showModal, setModalValue] = useState(false);
+
+    const [modalDataValores, setModalDataValores] = useState({
+        idregistro: "",
+        idvacina: "",
+    });
+
     const {
         createRegistro,
         listRegistros,
@@ -34,11 +40,11 @@ function Registro() {
         retrieveVacinas();
     }, [offset]);
 
-    const handle = (e) => {
+    const handle = async (e) => {
         e.preventDefault();
-        createRegistro(idVacina, data);
-        setTimeout(() => retrieveVacinas(), 100);
-        setTimeout(() => retrieveRegistros(), 100);
+        await createRegistro(idVacina, data);
+        retrieveRegistros();
+        retrieveVacinas();
     };
 
     const limpar = (e) => {
@@ -47,18 +53,37 @@ function Registro() {
         setData("");
     };
 
-    const remover = (e, id) => {
+    const remover = async (e, id) => {
         e.preventDefault();
-        removerRegistro(id);
-        setTimeout(() => retrieveVacinas(), 100);
-        setTimeout(() => retrieveRegistros(), 100);
+        await removerRegistro(id);
+        retrieveVacinas();
+        retrieveRegistros();
     };
 
-    const editar = (e, idregistro, idvacina) => {
+    const editar = async (e) => {
         e.preventDefault();
-        const newdata = prompt("Digite uma nova data");
-        updateRegistro(idregistro, idvacina, newdata);
-        setTimeout(() => retrieveRegistros(), 100);
+        await updateRegistro(
+            modalDataValores.idregistro,
+            modalDataValores.idvacina,
+            data
+        );
+        retrieveRegistros();
+    };
+
+    const ativarModal = (e, idregistro, idvacina) => {
+        e.preventDefault();
+        setModalDataValores({ idregistro: idregistro, idvacina: idvacina });
+        setModalValue(true);
+    };
+
+    const desativarModal = (e) => {
+        e.preventDefault();
+        setModalValue(false);
+        setModalDataValores({
+            idregistro: "",
+            idvacina: "",
+        });
+        setData("");
     };
 
     const anterior = (e) => {
@@ -75,6 +100,26 @@ function Registro() {
 
     return (
         <div>
+            <div
+                class="Modal"
+                style={{
+                    visibility: showModal ? "visible" : "hidden",
+                }}
+            >
+                <div class="ModalClose" onClick={(e) => desativarModal(e)}>
+                    x
+                </div>
+                <h4>
+                    Editar Data do registro ID: {modalDataValores.idregistro}
+                </h4>
+                <input
+                    type="text"
+                    value={data}
+                    onChange={(e) => setData(e.target.value)}
+                ></input>
+                <button onClick={(e) => editar(e)}>Editar</button>
+            </div>
+
             <h4>Registro</h4>
             <div>
                 <label>Vacina</label>
@@ -105,23 +150,20 @@ function Registro() {
                         <th>Vacina</th>
                         <th>Data</th>
                         <th>Editar</th>
+                        <th>Excluir</th>
                     </tr>
                 </thead>
                 <tbody>
                     {registros !== undefined &&
                         registros.map((item, index) => (
-                            <tr
-                                onContextMenu={(e) =>
-                                    remover(e, item.idregistro)
-                                }
-                            >
+                            <tr>
                                 <td>{item.idregistro}</td>
                                 <td>{item.vacina.nome}</td>
                                 <td>{item.data}</td>
                                 <td>
                                     <button
                                         onClick={(e) =>
-                                            editar(
+                                            ativarModal(
                                                 e,
                                                 item.idregistro,
                                                 item.idvacina
@@ -129,6 +171,15 @@ function Registro() {
                                         }
                                     >
                                         Editar data
+                                    </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={(e) =>
+                                            remover(e, item.idregistro)
+                                        }
+                                    >
+                                        Excluir
                                     </button>
                                 </td>
                             </tr>
