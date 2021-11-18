@@ -7,3 +7,7 @@ Atividade 2 (front html) + atividade 3 (front css) da matéria programação de 
 # Como executar
 - Executar "npm i" separadamente para os projetos de front e servidor para fazer a instalação de dependências.
 - Executar Servidor e front separadamente, servidor com "npm run dev" e front "npm start".
+
+# Usuario ADM:
+email: vini@gmail.com
+senha: pepino
