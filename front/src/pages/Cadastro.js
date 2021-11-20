@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { Button, Input, FormGroup, Label, Form } from "reactstrap";
 
 import { Context } from "../AuthContext";
 
@@ -16,26 +17,32 @@ function Cadastro() {
 
     return (
         <div>
-            <h4>Cadastro</h4>
-            <div>
-                <label>Email</label>
-                <input
-                    type="text"
-                    value={email}
-                    onChange={(e) => {
-                        setEmail(e.target.value);
-                    }}
-                ></input>
-            </div>
-            <div>
-                <label>Senha</label>
-                <input
-                    type="password"
-                    value={senha}
-                    onChange={(e) => setSenha(e.target.value)}
-                ></input>
-            </div>
-            <button onClick={(e) => handle(e)}>Criar</button>
+            <h4 className="mt-3 mb-3">Cadastro</h4>
+            <Form>
+                <FormGroup>
+                    <Label>Email</Label>
+                    <Input
+                        type="text"
+                        value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                        }}
+                    ></Input>
+                </FormGroup>
+                <FormGroup>
+                    <Label>Senha</Label>
+                    <Input
+                        type="password"
+                        value={senha}
+                        onChange={(e) => setSenha(e.target.value)}
+                    ></Input>
+                </FormGroup>
+                <FormGroup>
+                    <Button color="success" onClick={(e) => handle(e)}>
+                        Criar
+                    </Button>
+                </FormGroup>
+            </Form>
         </div>
     );
 }

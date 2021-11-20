@@ -1,14 +1,32 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../AuthContext";
+import {
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Button,
+    Input,
+    Table,
+    Form,
+    FormGroup,
+    Container,
+    Label,
+    Toast,
+    ToastHeader,
+    ToastBody,
+} from "reactstrap";
 
 function Registro() {
     const [registros, setRegistros] = useState([]);
     const [vacinas, setVacinas] = useState([]);
     const [data, setData] = useState("");
+    const [newData, setNewData] = useState("");
     const [idVacina, setVacina] = useState(1);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(12);
     const [showModal, setModalValue] = useState(false);
+    const [showToast, setShowToast] = useState(false);
 
     const [modalDataValores, setModalDataValores] = useState({
         idregistro: "",
@@ -51,6 +69,7 @@ function Registro() {
         e.preventDefault();
         setVacina(1);
         setData("");
+        ativarToast();
     };
 
     const remover = async (e, id) => {
@@ -65,9 +84,10 @@ function Registro() {
         await updateRegistro(
             modalDataValores.idregistro,
             modalDataValores.idvacina,
-            data
+            newData
         );
         retrieveRegistros();
+        desativarModal(e);
     };
 
     const ativarModal = (e, idregistro, idvacina) => {
@@ -83,7 +103,12 @@ function Registro() {
             idregistro: "",
             idvacina: "",
         });
-        setData("");
+        setNewData("");
+    };
+
+    const ativarToast = () => {
+        setShowToast(true);
+        // setTimeout(() => setShowToast(false), 3000);
     };
 
     const anterior = (e) => {
@@ -100,51 +125,83 @@ function Registro() {
 
     return (
         <div>
-            <div
-                class="Modal"
-                style={{
-                    visibility: showModal ? "visible" : "hidden",
-                }}
-            >
-                <div class="ModalClose" onClick={(e) => desativarModal(e)}>
-                    x
-                </div>
-                <h4>
-                    Editar Data do registro ID: {modalDataValores.idregistro}
-                </h4>
-                <input
-                    type="text"
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
-                ></input>
-                <button onClick={(e) => editar(e)}>Editar</button>
-            </div>
+            <Modal isOpen={showModal}>
+                <ModalHeader>Editar Data</ModalHeader>
+                <ModalBody>
+                    <Label>
+                        Editar data do registro: {modalDataValores.idregistro}
+                    </Label>
+                    <br />
+                    <Input
+                        type="text"
+                        value={newData}
+                        onChange={(e) => setNewData(e.target.value)}
+                        placeholder="Digite como o exemplo: 2021-11-20"
+                    ></Input>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="success" onClick={(e) => editar(e)}>
+                        Editar
+                    </Button>
+                    <Button onClick={(e) => desativarModal(e)}>Cancelar</Button>
+                </ModalFooter>
+            </Modal>
 
-            <h4>Registro</h4>
-            <div>
-                <label>Vacina</label>
-                <select
-                    value={idVacina}
-                    onChange={(e) => setVacina(e.target.value)}
-                >
-                    {vacinas !== undefined &&
-                        vacinas.map((item, index) => (
-                            <option value={item.idvacina}>{item.nome}</option>
-                        ))}
-                </select>
-            </div>
-            <div>
-                <label>Data</label>
-                <input
-                    type="text"
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
-                ></input>
-            </div>
-            <button onClick={(e) => handle(e)}>Criar</button>
-            <button onClick={(e) => limpar(e)}>Limpar</button>
-            <table>
-                <thead>
+            <h4 className="mt-3 mb-3">Registro</h4>
+            <Form>
+                <FormGroup>
+                    <Label>Vacina</Label>
+                    <Input
+                        value={idVacina}
+                        type="select"
+                        onChange={(e) => setVacina(e.target.value)}
+                    >
+                        {vacinas !== undefined &&
+                            vacinas.map((item, index) => (
+                                <option value={item.idvacina}>
+                                    {item.nome}
+                                </option>
+                            ))}
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                    <Label>Data (Ano-Mês-Dia)</Label>
+                    <Input
+                        type="text"
+                        value={data}
+                        onChange={(e) => setData(e.target.value)}
+                        placeholder="Digite como o exemplo: 2021-11-20"
+                    ></Input>
+                </FormGroup>
+                <FormGroup>
+                    <Container>
+                        <div className="row">
+                            <Button
+                                className="col col-auto"
+                                color="success"
+                                size="sm"
+                                onClick={(e) => handle(e)}
+                            >
+                                Criar
+                            </Button>
+                            <div className="col col-auto" />
+                            <Button
+                                className="col col-auto"
+                                color="success"
+                                size="sm"
+                                onClick={(e) => limpar(e)}
+                            >
+                                Limpar
+                            </Button>
+                        </div>
+                    </Container>
+                </FormGroup>
+            </Form>
+            <Table
+                striped
+                className="border border-1 border-success table-hover"
+            >
+                <thead className="bg-success text-white">
                     <tr>
                         <th>ID</th>
                         <th>Vacina</th>
@@ -161,7 +218,9 @@ function Registro() {
                                 <td>{item.vacina.nome}</td>
                                 <td>{item.data}</td>
                                 <td>
-                                    <button
+                                    <Button
+                                        color="success"
+                                        size="sm"
                                         onClick={(e) =>
                                             ativarModal(
                                                 e,
@@ -171,25 +230,46 @@ function Registro() {
                                         }
                                     >
                                         Editar data
-                                    </button>
+                                    </Button>
                                 </td>
                                 <td>
-                                    <button
+                                    <Button
+                                        color="success"
+                                        size="sm"
                                         onClick={(e) =>
                                             remover(e, item.idregistro)
                                         }
                                     >
                                         Excluir
-                                    </button>
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
                 </tbody>
-            </table>
-            <div>
-                <button onClick={(e) => anterior(e)}>Anterior</button>
-                <button onClick={(e) => proximo(e)}>Próximo</button>
-            </div>
+            </Table>
+            <FormGroup>
+                <Container>
+                    <div className="row">
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => anterior(e)}
+                        >
+                            Anterior
+                        </Button>
+                        <div className="col col-auto" />
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => proximo(e)}
+                        >
+                            Próximo
+                        </Button>
+                    </div>
+                </Container>
+            </FormGroup>
         </div>
     );
 }

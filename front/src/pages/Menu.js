@@ -1,48 +1,69 @@
 import React, { useContext } from "react";
 import { Context } from "../AuthContext";
-import history from "../history";
+import { Nav, NavItem, NavbarBrand, NavLink } from "reactstrap";
 
 function Menu() {
     const { logout, logado, perfil } = useContext(Context);
     return (
-        <div>
-            <div id="header">
-                <h4 id="logo">Cadastro de vacinas</h4>
-                {logado && (
-                    <div>
-                        <button onClick={() => history.push("/registro")}>
+        <Nav className="align-items-center border-bottom border-success border-2">
+            <NavbarBrand className="m-2 text-dark">
+                <h4 style={{ userSelect: "none" }}>Cadastro de vacinas</h4>
+            </NavbarBrand>
+            {logado && (
+                <>
+                    <NavItem>
+                        <NavLink className="text-success" href="/registro">
                             Registro
-                        </button>
+                        </NavLink>
+                    </NavItem>
 
-                        {perfil === "admin" && (
-                            <>
-                                <button onClick={() => history.push("/perfil")}>
+                    {perfil === "admin" && (
+                        <>
+                            <NavItem>
+                                <NavLink
+                                    className="text-success"
+                                    href="/perfil"
+                                >
                                     Perfil
-                                </button>
-                                <button onClick={() => history.push("/vacina")}>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className="text-success"
+                                    href="/vacina"
+                                >
                                     Vacina
-                                </button>
-                            </>
-                        )}
-                        <button onClick={() => history.push("/seusdados")}>
+                                </NavLink>
+                            </NavItem>
+                        </>
+                    )}
+                    <NavItem>
+                        <NavLink className="text-success" href="/seusdados">
                             Seus dados
-                        </button>
-                        <button onClick={() => logout()}>Logout</button>
-                    </div>
-                )}
-                {!logado && (
-                    <div>
-                        <button onClick={() => history.push("/login")}>
-                            Login
-                        </button>
-                        <button onClick={() => history.push("/cadastro")}>
-                            Criar conta
-                        </button>
-                    </div>
-                )}
-            </div>
-            <hr />
-        </div>
+                        </NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className="text-success"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => logout()}
+                        >
+                            Logout
+                        </NavLink>
+                    </NavItem>
+                </>
+            )}
+            {!logado && (
+                <>
+                    <NavLink className="text-success" href="/login">
+                        Login
+                    </NavLink>
+                    <NavLink className="text-success" href="/cadastro">
+                        Criar conta
+                    </NavLink>
+                </>
+            )}
+        </Nav>
     );
 }
 

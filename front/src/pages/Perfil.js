@@ -2,13 +2,26 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { Context } from "../AuthContext";
 
+import {
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Button,
+    Input,
+    Table,
+    FormGroup,
+    Container,
+    Label,
+} from "reactstrap";
+
 function Perfil() {
     const { listUsuarios, updatePerfil } = useContext(Context);
     const [usuarios, setUsuarios] = useState([]);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(12);
     const [showModal, setModalValue] = useState(false);
-    const [perfil, setPerfil] = useState("user");
+    const [newPerfil, setNewPerfil] = useState("user");
 
     const [modalDataValores, setModalDataValores] = useState({
         idusuario: "",
@@ -40,8 +53,9 @@ function Perfil() {
 
     const editar = async (e) => {
         e.preventDefault();
-        await updatePerfil(modalDataValores.idusuario, perfil);
+        await updatePerfil(modalDataValores.idusuario, newPerfil);
         retrieveUsuarios();
+        desativarModal(e);
     };
 
     const ativarModal = (e, idusuario) => {
@@ -56,68 +70,94 @@ function Perfil() {
         setModalDataValores({
             idusuario: "",
         });
+        setNewPerfil("user");
     };
 
     return (
         <div>
-            <div
-                class="Modal"
-                style={{
-                    visibility: showModal ? "visible" : "hidden",
-                }}
-            >
-                <div class="ModalClose" onClick={(e) => desativarModal(e)}>
-                    x
-                </div>
-                <h4>
-                    Editar Perfil do usuario de ID: {modalDataValores.idusuario}
-                </h4>
-                <select
-                    value={perfil}
-                    onChange={(e) => {
-                        setPerfil(e.target.value);
-                    }}
-                >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <button onClick={(e) => editar(e)}>Editar</button>
-            </div>
+            <Modal isOpen={showModal}>
+                <ModalHeader>Editar Perfil</ModalHeader>
+                <ModalBody>
+                    <Label>
+                        Editar perfil do usuario: {modalDataValores.idusuario}
+                    </Label>
+                    <Input
+                        type="select"
+                        value={newPerfil}
+                        onChange={(e) => {
+                            setNewPerfil(e.target.value);
+                        }}
+                    >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </Input>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="success" onClick={(e) => editar(e)}>
+                        Editar
+                    </Button>
+                    <Button onClick={(e) => desativarModal(e)}>Cancelar</Button>
+                </ModalFooter>
+            </Modal>
 
-            <h4>Perfil</h4>
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Usuario</th>
-                            <th>Perfil</th>
-                            <th>Editar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usuarios !== undefined &&
-                            usuarios.map((item, index) => (
-                                <tr>
-                                    <td>{item.idusuario}</td>
-                                    <td>{item.mail}</td>
-                                    <td>{item.perfil}</td>
-                                    <td>
-                                        <button
-                                            onClick={(e) =>
-                                                ativarModal(e, item.idusuario)
-                                            }
-                                        >
-                                            Editar Perfil
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
-                <button onClick={(e) => anterior(e)}>Anterior</button>
-                <button onClick={(e) => proximo(e)}>Próximo</button>
-            </div>
+            <h4 className="mt-3 mb-3">Perfil</h4>
+            <Table
+                striped
+                className="border border-1 border-success table-hover"
+            >
+                <thead className="bg-success text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Perfil</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {usuarios !== undefined &&
+                        usuarios.map((item, index) => (
+                            <tr>
+                                <td>{item.idusuario}</td>
+                                <td>{item.mail}</td>
+                                <td>{item.perfil}</td>
+                                <td>
+                                    <Button
+                                        color="success"
+                                        size="sm"
+                                        onClick={(e) =>
+                                            ativarModal(e, item.idusuario)
+                                        }
+                                    >
+                                        Editar Perfil
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                </tbody>
+            </Table>
+            <FormGroup>
+                <Container>
+                    <div className="row">
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => anterior(e)}
+                        >
+                            Anterior
+                        </Button>
+                        <div className="col col-auto" />
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => proximo(e)}
+                        >
+                            Próximo
+                        </Button>
+                    </div>
+                </Container>
+            </FormGroup>
         </div>
     );
 }

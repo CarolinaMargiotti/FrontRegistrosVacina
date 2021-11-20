@@ -1,11 +1,25 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../AuthContext";
+import {
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Button,
+    Input,
+    Table,
+    Form,
+    FormGroup,
+    Container,
+    Label,
+} from "reactstrap";
 
 function Vacina() {
     const { listVacinas, createVacina, removerVacina, updateVacina } =
         useContext(Context);
     const [vacinas, setVacinas] = useState([]);
     const [nome, setNome] = useState("");
+    const [newNome, setNewNome] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(12);
 
@@ -45,8 +59,9 @@ function Vacina() {
 
     const editar = async (e) => {
         e.preventDefault();
-        await updateVacina(modalDataValores.idvacina, nome);
+        await updateVacina(modalDataValores.idvacina, newNome);
         retrieveVacinas();
+        desativarModal(e);
     };
 
     const ativarModal = (e, idvacina) => {
@@ -62,7 +77,7 @@ function Vacina() {
             idregistro: "",
             idvacina: "",
         });
-        setNome("");
+        setNewNome("");
     };
 
     const anterior = (e) => {
@@ -79,37 +94,65 @@ function Vacina() {
 
     return (
         <div>
-            <div
-                class="Modal"
-                style={{
-                    visibility: showModal ? "visible" : "hidden",
-                }}
-            >
-                <div class="ModalClose" onClick={(e) => desativarModal(e)}>
-                    x
-                </div>
-                <h4>Editar Nome da vacina ID: {modalDataValores.idvacina}</h4>
-                <input
-                    type="text"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                ></input>
-                <button onClick={(e) => editar(e)}>Editar</button>
-            </div>
+            <Modal isOpen={showModal}>
+                <ModalHeader>Editar Nome</ModalHeader>
+                <ModalBody>
+                    <Label>
+                        Editar nome da vacina: {modalDataValores.idvacina}
+                    </Label>
+                    <Input
+                        type="text"
+                        value={newNome}
+                        onChange={(e) => setNewNome(e.target.value)}
+                    ></Input>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="success" onClick={(e) => editar(e)}>
+                        Editar
+                    </Button>
+                    <Button onClick={(e) => desativarModal(e)}>Cancelar</Button>
+                </ModalFooter>
+            </Modal>
 
-            <h4>Vacina</h4>
-            <div>
-                <label>Nome</label>
-                <input
-                    value={nome}
-                    type="text"
-                    onChange={(e) => setNome(e.target.value)}
-                ></input>
-            </div>
-            <button onClick={(e) => handle(e)}>Criar</button>
-            <button onClick={(e) => limpar(e)}>Limpar</button>
-            <table>
-                <thead>
+            <h4 className="mt-3 mb-3">Vacina</h4>
+            <Form>
+                <FormGroup>
+                    <Label>Nome</Label>
+                    <Input
+                        value={nome}
+                        type="text"
+                        onChange={(e) => setNome(e.target.value)}
+                    ></Input>
+                </FormGroup>
+                <FormGroup>
+                    <Container>
+                        <div className="row">
+                            <Button
+                                className="col col-auto"
+                                color="success"
+                                size="sm"
+                                onClick={(e) => handle(e)}
+                            >
+                                Criar
+                            </Button>
+                            <div className="col col-auto" />
+                            <Button
+                                className="col col-auto"
+                                color="success"
+                                size="sm"
+                                onClick={(e) => limpar(e)}
+                            >
+                                Limpar
+                            </Button>
+                        </div>
+                    </Container>
+                </FormGroup>
+            </Form>
+            <Table
+                striped
+                className="border border-1 border-success table-hover"
+            >
+                <thead className="bg-success text-white">
                     <tr>
                         <th>ID</th>
                         <th>Vacina</th>
@@ -124,30 +167,54 @@ function Vacina() {
                                 <td>{item.idvacina}</td>
                                 <td>{item.nome}</td>
                                 <td>
-                                    <button
+                                    <Button
+                                        color="success"
+                                        size="sm"
                                         onClick={(e) =>
                                             ativarModal(e, item.idvacina)
                                         }
                                     >
                                         Editar
-                                    </button>
+                                    </Button>
                                 </td>
                                 <td>
-                                    <button
+                                    <Button
+                                        color="success"
+                                        size="sm"
                                         onClick={(e) =>
                                             remover(e, item.idvacina)
                                         }
                                     >
                                         Excluir
-                                    </button>
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
                 </tbody>
-            </table>
-
-            <button onClick={(e) => anterior(e)}>Anterior</button>
-            <button onClick={(e) => proximo(e)}>Próximo</button>
+            </Table>
+            <FormGroup>
+                <Container>
+                    <div className="row">
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => anterior(e)}
+                        >
+                            Anterior
+                        </Button>
+                        <div className="col col-auto" />
+                        <Button
+                            className="col col-auto"
+                            color="success"
+                            size="sm"
+                            onClick={(e) => proximo(e)}
+                        >
+                            Próximo
+                        </Button>
+                    </div>
+                </Container>
+            </FormGroup>
         </div>
     );
 }
