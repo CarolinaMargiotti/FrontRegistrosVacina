@@ -1,4 +1,4 @@
-Carolina Margiotti de Abreu 4º semestre turma B
+Front-end do repositório de registro de vacinas.
 
 
 # FrontRegistrosVacina
